@@ -1,0 +1,400 @@
+:root {
+  --pitch-max: clamp(22rem, 92vw, 45rem);
+}
+
+/* Global typography */
+html {
+  font-family: "Roboto", system-ui, -apple-system, Segoe UI, Helvetica, Arial,
+    "Apple Color Emoji", "Segoe UI Emoji", sans-serif;
+  font-optical-sizing: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+body {
+  font-family: inherit;
+}
+
+.widget-wrap {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+.widget-card {
+  width: min(60rem, 95vw);
+  margin: 0 auto;
+}
+
+.poss-wrap {
+  margin: 0.5rem 0 1rem;
+}
+.pitch-area {
+  position: relative;
+  width: 100%;
+  max-width: var(--pitch-max);
+  margin: 0 auto;
+  aspect-ratio: 278/62;
+  z-index: 1;
+  isolation: isolate;
+}
+.pitch-area .pitch-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+.center-line {
+  position: absolute;
+  top: 3%;
+  bottom: 3%;
+  left: 50%;
+  width: 0.0625rem;
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateX(-0.03125rem);
+  z-index: 2;
+}
+
+.percent {
+  position: absolute;
+  top: 20%;
+  z-index: 3;
+  pointer-events: none;
+}
+.percent.left {
+  left: clamp(12%, 30vw, 30%);
+}
+.percent.right {
+  right: clamp(12%, 30vw, 30%);
+}
+.percent .value {
+  font-weight: 600;
+  font-size: clamp(1.25rem, 6vw, 2.5rem);
+  line-height: 1;
+  opacity: 0.9;
+  text-shadow: 0 0.125rem 0.1875rem rgba(0, 0, 0, 0.35);
+}
+.percent.left .value {
+  color: #ffbb00;
+}
+.percent.right .value {
+  color: #2ed39a;
+}
+
+.odds-strip {
+  display: flex;
+  justify-content: center;
+  margin: 0.5rem 0 0.625rem;
+}
+.odds-row {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  width: 100%;
+  max-width: var(--pitch-max);
+  justify-content: center;
+}
+
+.odds-chip {
+  background: linear-gradient(180deg, #ffbb00 0%, #ffbb00 100%);
+  color: #0e1b15;
+  border: none;
+  border-radius: 0.75rem;
+  padding: 0.875rem 0.875rem;
+  min-width: 30%;
+  box-shadow: 0 0.1875rem 0 rgba(0, 0, 0, 0.25),
+    inset 0 0.0625rem 0 rgba(255, 255, 255, 0.25);
+  cursor: default;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  font-family: "Roboto", sans-serif;
+  text-align: left;
+  grid-auto-rows: auto;
+  align-items: center;
+  row-gap: 0.125rem;
+}
+.odds-chip .top {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  column-gap: 0.5rem;
+}
+.odds-chip .label {
+  font-weight: 800;
+  font-size: clamp(0.95rem, 2.3vw, 1.125rem);
+  grid-column: 1;
+}
+.odds-chip .odds {
+  font-weight: 900;
+  font-size: clamp(1.05rem, 2.6vw, 1.25rem);
+  grid-column: 2;
+  justify-self: end;
+  margin-left: 0;
+}
+.odds-chip .sub {
+  display: block;
+  font-size: clamp(0.9rem, 2.2vw, 1.125rem);
+  opacity: 0.95;
+  margin-top: 0.125rem;
+  grid-column: 1 / -1;
+}
+.odds-chip:focus-visible {
+  outline: 0.125rem solid #fff;
+  outline-offset: 0.125rem;
+}
+
+.goal-strip {
+  display: flex;
+  justify-content: center;
+  margin: 2rem 0 3rem;
+  z-index: 10;
+  min-height: 2.25rem;
+}
+
+.goal-pill.ghost {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.goal-row {
+  width: 100%;
+  max-width: var(--pitch-max);
+  display: flex;
+  justify-content: center;
+}
+.goal-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: clamp(0.375rem, 1.4vw, 0.625rem) clamp(0.625rem, 2vw, 0.75rem);
+  border-radius: 0.375rem;
+  background: linear-gradient(180deg, #023b2f 0%, #0b2f24 100%);
+  font-family: "Roboto", sans-serif;
+  box-shadow: 0 0.125rem 0 rgba(0, 0, 0, 0.25),
+    inset 0 0.0625rem 0 rgba(255, 255, 255, 0.08);
+}
+.goal-pill .label {
+  color: #ffbb00;
+  font-weight: 900;
+  letter-spacing: 0.0125rem;
+  font-size: clamp(0.75rem, 2.2vw, 0.8125rem);
+}
+.goal-pill .team-name {
+  color: #d6edf4;
+  font-weight: 800;
+  font-size: clamp(0.75rem, 2.2vw, 0.8125rem);
+}
+.goal-pill .minute {
+  color: #ffbb00;
+  font-weight: 900;
+  font-size: clamp(0.75rem, 2.2vw, 0.8125rem);
+  margin-left: 0.25rem;
+}
+.goal-pill .dot {
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 50%;
+  background: #bcd5df;
+  box-shadow: 0 0 0 0.125rem rgba(188, 213, 223, 0.25);
+}
+
+.poss-header{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  width:100%;
+  max-width: var(--pitch-max);
+  margin: 0 auto .5rem;
+  align-items:start;
+  position:relative;
+  z-index:3;
+  min-height: 2.25rem;
+}
+
+.poss-badge{
+  grid-row:1;
+  display:flex;
+  flex-direction:column;
+  gap:.25rem;
+  padding-inline: 2rem;
+  width:100%;
+}
+
+.poss-badge.left{
+  grid-column:1;
+  justify-self:end;
+  align-items:flex-start;
+  text-align:left;
+}
+
+.poss-badge.right{
+  grid-column:2;
+  justify-self:start;
+  align-items:flex-start;
+  text-align:left;
+}
+
+.poss-badge.ghost{
+  visibility:hidden;
+}
+
+@media (max-width: 48rem) {
+  .odds-chip {
+    padding: 0.625rem 0.625rem;
+  }
+  .odds-chip .label {
+    font-size: 1rem;
+  }
+  .odds-chip .odds {
+    font-size: 1.125rem;
+  }
+  .odds-chip .sub {
+    font-size: 0.95rem;
+  }
+}
+@media (max-width: 30rem) {
+  .odds-row {
+    gap: 0.5rem;
+  }
+  .odds-chip {
+    padding: 0.5rem 0.5rem;
+  }
+  .odds-chip .label {
+    font-size: 0.9rem;
+  }
+  .odds-chip .odds {
+    font-size: 1rem;
+  }
+  .odds-chip .sub {
+    font-size: 0.875rem;
+  }
+  .center-line {
+    top: 4%;
+    bottom: 4%;
+  }
+}
+
+.poss-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 100%;
+  max-width: var(--pitch-max);
+  margin: 0 auto 0.5rem;
+  align-items: start;
+  position: relative;
+  z-index: 3;
+  overflow: hidden;
+}
+
+.poss-badge {
+  grid-row: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding-inline: 2rem;
+  width: max-content;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+.poss-badge.left {
+  grid-column: 1;
+  justify-self: end;
+  align-items: flex-start;
+  text-align: left;
+  animation: poss-enter-left 920ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+.poss-badge.right {
+  grid-column: 2;
+  justify-self: start;
+  align-items: flex-start;
+  text-align: left;
+  animation: poss-enter-right 920ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.poss-badge.center {
+  grid-column: 1 / -1;
+  justify-self: center;
+  align-items: center;
+  text-align: center;
+  opacity: 1;
+}
+
+.poss-title {
+  color: #ffb25b;
+  font-weight: 800;
+  font-size: 0.95rem;
+  line-height: 1;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
+}
+.poss-team {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+.poss-team .dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: #bcd5df;
+  box-shadow: 0 0 0 0.125rem rgba(188, 213, 223, 0.25);
+}
+.poss-team .team-name {
+  color: #cfe4ea;
+  font-weight: 800;
+  font-size: 0.85rem;
+}
+
+@keyframes poss-enter-left {
+  0% {
+    transform: translateX(-15%);
+    opacity: 0;
+    filter: blur(2px);
+  }
+  70% {
+    opacity: 0.98;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+    filter: none;
+  }
+}
+@keyframes poss-enter-right {
+  0% {
+    transform: translateX(15%);
+    opacity: 0;
+    filter: blur(2px);
+  }
+  70% {
+    opacity: 0.98;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+    filter: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .poss-badge {
+    animation: none !important;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes goal-fade-in {
+  0%   { opacity: 0; transform: translateY(-0.35rem) scale(.98); }
+  60%  { opacity: 1; }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.goal-pill.is-enter {
+  animation: goal-fade-in 420ms cubic-bezier(.21,.61,.35,1) both;
+  will-change: opacity, transform;
+}
+
+.goal-pill.ghost { visibility: hidden; }
+
+@media (prefers-reduced-motion: reduce) {
+  .goal-pill.is-enter { animation: none; }
+}
