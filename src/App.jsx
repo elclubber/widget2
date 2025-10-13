@@ -3,7 +3,7 @@ import WidgetSection from "./components/WidgetSection/WidgetSection.jsx"; // or 
 
 export default function App() {
   return (
-    <div style={{ padding: 16 }}>
+    <div>
       <WidgetSection />
     </div>
   );

@@ -172,6 +172,19 @@ body {
   box-shadow: 0 0.125rem 0 rgba(0, 0, 0, 0.25),
     inset 0 0.0625rem 0 rgba(255, 255, 255, 0.08);
 }
+.goal-popover .goal-pill::before {
+  content: "";
+  position: absolute;
+  top: -0.5rem; /* raise it so the base touches the pill */
+  left: 10px; /* half of the 20px ball width */
+  transform: translateX(-50%); /* center under the ball */
+  width: 0;
+  height: 0;
+  border-left: 0.8rem solid transparent;
+  border-right: 0.8rem solid transparent;
+  border-bottom: 0.8rem solid var(--goal-popover-bg);
+  filter: drop-shadow(0 2px 0 var(--goal-popover-shadow));
+}
 .goal-pill .label {
   color: #ffbb00;
   font-weight: 900;
@@ -182,6 +195,7 @@ body {
   color: #d6edf4;
   font-weight: 800;
   font-size: clamp(0.75rem, 2.2vw, 0.8125rem);
+  white-space: nowrap;
 }
 .goal-pill .minute {
   color: #ffbb00;
@@ -197,43 +211,43 @@ body {
   box-shadow: 0 0 0 0.125rem rgba(188, 213, 223, 0.25);
 }
 
-.poss-header{
-  display:grid;
+.poss-header {
+  display: grid;
   grid-template-columns: 1fr 1fr;
-  width:100%;
+  width: 100%;
   max-width: var(--pitch-max);
-  margin: 0 auto .5rem;
-  align-items:start;
-  position:relative;
-  z-index:3;
+  margin: 0 auto 0.5rem;
+  align-items: start;
+  position: relative;
+  z-index: 3;
   min-height: 2.25rem;
 }
 
-.poss-badge{
-  grid-row:1;
-  display:flex;
-  flex-direction:column;
-  gap:.25rem;
+.poss-badge {
+  grid-row: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
   padding-inline: 2rem;
-  width:100%;
+  width: 100%;
 }
 
-.poss-badge.left{
-  grid-column:1;
-  justify-self:end;
-  align-items:flex-start;
-  text-align:left;
+.poss-badge.left {
+  grid-column: 1;
+  justify-self: end;
+  align-items: flex-start;
+  text-align: left;
 }
 
-.poss-badge.right{
-  grid-column:2;
-  justify-self:start;
-  align-items:flex-start;
-  text-align:left;
+.poss-badge.right {
+  grid-column: 2;
+  justify-self: start;
+  align-items: flex-start;
+  text-align: left;
 }
 
-.poss-badge.ghost{
-  visibility:hidden;
+.poss-badge.ghost {
+  visibility: hidden;
 }
 
 @media (max-width: 48rem) {
@@ -383,18 +397,267 @@ body {
 }
 
 @keyframes goal-fade-in {
-  0%   { opacity: 0; transform: translateY(-0.35rem) scale(.98); }
-  60%  { opacity: 1; }
-  100% { opacity: 1; transform: translateY(0) scale(1); }
+  0% {
+    opacity: 0;
+    transform: translateY(-0.35rem) scale(0.98);
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .goal-pill.is-enter {
-  animation: goal-fade-in 420ms cubic-bezier(.21,.61,.35,1) both;
+  animation: goal-fade-in 420ms cubic-bezier(0.21, 0.61, 0.35, 1) both;
   will-change: opacity, transform;
 }
 
-.goal-pill.ghost { visibility: hidden; }
+.goal-pill.ghost {
+  visibility: hidden;
+}
 
 @media (prefers-reduced-motion: reduce) {
-  .goal-pill.is-enter { animation: none; }
+  .goal-pill.is-enter {
+    animation: none;
+  }
+}
+
+/* ========= MATCH TIMELINE ========= */
+.timeline-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 1rem 0 1.25rem;
+}
+.timeline {
+  width: 100%;
+  max-width: var(--pitch-max);
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  align-items: center;
+  column-gap: 0.75rem;
+  font-family: "Roboto", sans-serif;
+}
+
+/* teams column (left) */
+.timeline .teams {
+  grid-column: 1;
+  grid-row: 2 / span 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.timeline .team {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-weight: 800;
+  color: #cfe4ea;
+  font-size: 0.9rem;
+}
+.timeline .team .dot {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  background: #bcd5df;
+  box-shadow: 0 0 0 0.125rem rgba(188, 213, 223, 0.25);
+}
+
+/* ruler labels above track */
+.timeline .ruler {
+  grid-column: 2;
+  grid-row: 1;
+  position: relative;
+  margin-left: 0.2rem;
+  height: 2rem;
+}
+.timeline .ruler span {
+  position: absolute;
+  transform: translateX(-50%);
+  top: 0;
+  font-weight: 400;
+  color: #d6edf4;
+  opacity: 0.9;
+  font-size: 1.2rem;
+}
+
+/* track row */
+.timeline .track {
+  grid-column: 2;
+  grid-row: 2;
+  position: relative;
+  height: 0.35rem;
+  border-radius: 0.175rem;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.18),
+    rgba(255, 255, 255, 0.22)
+  );
+  overflow: visible;
+}
+
+/* ticks */
+.timeline .tick {
+  position: absolute;
+  top: -0.5rem;
+  width: 0.125rem;
+  height: 1.4rem;
+  background: rgba(255, 255, 255, 0.45);
+  transform: translateX(-50%);
+}
+
+.timeline .tick.major {
+  height: 1.8rem;
+  width: 0.2rem;
+  top: -0.7rem;
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.timeline .progress {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 0.25rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #ffa200 0%, #ffd36e 100%);
+  z-index: 2;
+}
+
+.timeline .progress::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 50%;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  transform: translate(50%, -50%);
+  background: radial-gradient(circle at 35% 35%, #ffde05 100%);
+  box-shadow: 0 0 0 0.1rem #f3d306, 0 0 0 0.25rem rgba(255, 162, 0, 0.25),
+    0 0.05rem 0.15rem rgba(0, 0, 0, 0.25);
+  z-index: 3;
+}
+
+.timeline .progress[style*="width: 0%"]::after {
+  transform: translate(0, -50%);
+}
+
+.timeline .goal-pin {
+  position: absolute;
+  top: 0.7rem;
+  transform: translateX(-50%);
+  z-index: 4;
+}
+
+.timeline .goal-ball {
+  width: 1.25rem;
+  height: 1.25rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  box-shadow: 0 0 0 0.125rem rgba(0, 0, 0, 0.25),
+    inset 0 -0.1rem 0.2rem rgba(0, 0, 0, 0.18);
+  cursor: pointer;
+}
+.timeline .goal-ball:hover {
+  box-shadow: 0 0 0 0.125rem rgba(0, 0, 0, 0.35),
+    inset 0 -0.12rem 0.25rem rgba(0, 0, 0, 0.22);
+}
+.timeline .goal-ball:focus-visible {
+  outline: 0.125rem solid #fff;
+  outline-offset: 0.125rem;
+}
+
+.timeline .goal-popover {
+  position: absolute;
+  top: 1.8rem;
+  left: -1rem;
+  transform: translateX(0) scale(0.98);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+.timeline .goal-popover .goal-pill {
+  background: linear-gradient(180deg, rgb(18, 100, 69) 0%, #147550 100%);
+}
+.timeline .goal-popover.is-open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(0) scale(1);
+}
+
+.timeline .goal-popover.is-open::after {
+  content: "";
+  position: absolute;
+  top: -1.1rem;
+  left: 1rem;
+  border: 0.6rem solid transparent;
+  border-bottom-color: rgb(18, 100, 69);
+}
+@media (max-width: 42rem) {
+  .timeline .ruler span {
+    font-size: 0.85rem;
+  }
+  .timeline .team {
+    font-size: 0.85rem;
+  }
+  .timeline .goal-pin .goal-pill .team-name,
+  .timeline .goal-pin .goal-pill .label,
+  .timeline .goal-pin .goal-pill .minute {
+    font-size: 0.78rem;
+  }
+}
+
+.goal-ball {
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.goal-ball svg { display: block; }
+
+
+/* widget.css */
+.pitch-area {
+  position: relative;
+  max-width: var(--pitch-max, 720px);
+}
+
+.pitch-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  position: relative;         /* sits under the overlay */
+  z-index: 1;
+}
+
+.pitch-overlay {
+  position: absolute;
+  inset: 0;                   /* fill the pitch area */
+  z-index: 2;                 /* above the pitch */
+  pointer-events: none;       /* let clicks pass through */
+}
+
+.pitch-overlay svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.path-arc{
+  stroke: rgba(255,255,255,.85);
+  stroke-width: 0.8;
+  stroke-linecap: round;     /* round dots */
+  stroke-dasharray: 6 8;     /* longer gap/dot */
 }
