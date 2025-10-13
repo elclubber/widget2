@@ -1,3 +1,4 @@
+
 export default function GoalStrip({ lastGoal, maxWidth = 720 }) {
   const hasGoal = Boolean(lastGoal);
   const pillKey = hasGoal ? `goal-${lastGoal.team}-${lastGoal.minute}` : "goal-empty";

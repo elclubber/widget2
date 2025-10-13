@@ -1,7 +1,8 @@
 import PossessionPitch from "./PossessionPitch";
 import useFakePossessionFeed from "./hooks/useFakePossessionFeed";
 import OddsStrip from "./OddsStrip";
-import GoalStrip from "./GoalStrip";  
+import GoalStrip from "./GoalStrip";
+import MatchTimeline from "./MatchTimeline";
 import "./widget.css";
 
 export default function WidgetSection() {
@@ -15,6 +16,8 @@ export default function WidgetSection() {
     ballPossTeam,
     headerSide,
     frame,
+    minute,
+    goals,
   } = useFakePossessionFeed(1400);
 
   return (
@@ -31,7 +34,14 @@ export default function WidgetSection() {
           headerSide={headerSide}
           maxWidth={720}
           possTick={frame}
+          pathPoints={[
+            { x: 40, y: 62 },
+            { x: 70, y: 40 },
+            { x: 92, y: 34 },
+          ]}
+          showAxes={true}
         />
+        <MatchTimeline minute={minute} goals={goals} maxWidth={720} />
       </div>
     </div>
   );

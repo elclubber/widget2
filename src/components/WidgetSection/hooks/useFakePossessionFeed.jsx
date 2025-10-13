@@ -31,19 +31,20 @@ const STATIC_ODDS = [
   { label: "Haaland", odds: "2.75", subtitle: "to score next" },
 ];
 
-/** Optional: fake goal events so we can show a goal pill */
+// Mocked goal events – adjust freely
 const GOALS = [
-  { minute: 6, team: "Z.Man City" },
-  { minute: 27, team: "Z.Brentford" },
+  { minute: 6, team: awayTeam },
+  { minute: 24, team: homeTeam },
+  { minute: 28, team: homeTeam },
 ];
 
 export default function useFakePossessionFeed(intervalMs = 1000) {
   const [i, setI] = useState(0);
 
-const period = Number.isFinite(intervalMs) ? intervalMs : 1000;
+  const period = Number.isFinite(intervalMs) ? intervalMs : 1000;
   useEffect(() => {
     const id = setInterval(() => {
-      setI(n => (n + 1) % FRAMES.length);
+      setI((n) => (n + 1) % FRAMES.length);
     }, period);
     return () => clearInterval(id);
   }, [period]);
@@ -51,21 +52,27 @@ const period = Number.isFinite(intervalMs) ? intervalMs : 1000;
   const frame = FRAMES[i];
 
   const halfCount = frame.minutes <= 45 ? 1 : 2;
-  const leftSideTeam  = halfCount === 1 ? homeTeam : awayTeam;
+  const leftSideTeam = halfCount === 1 ? homeTeam : awayTeam;
   const rightSideTeam = halfCount === 1 ? awayTeam : homeTeam;
 
-  const leftPossTeamPct  = frame.left;
+  const leftPossTeamPct = frame.left;
   const rightPossTeamPct = frame.right;
 
   const ballPossTeam = frame.ballPossTeam;
-  const headerSide   = ballPossTeam === leftSideTeam ? "left" : "right";
-
+  const headerSide =
+    leftPossTeamPct === rightPossTeamPct
+      ? "center"
+      : leftPossTeamPct > rightPossTeamPct
+      ? "left"
+      : "right";
   const odds = useMemo(() => STATIC_ODDS, []);
 
   const lastGoal = useMemo(() => {
     const m = frame.minutes;
-    const past = [...GOALS].filter(g => g.minute <= m).pop();
-    return past ? { label: "GOAL", team: past.team, minute: past.minute } : null;
+    const past = [...GOALS].filter((g) => g.minute <= m).pop();
+    return past
+      ? { label: "GOAL", team: past.team, minute: past.minute }
+      : null;
   }, [frame.minutes]);
 
   return {
@@ -78,5 +85,9 @@ const period = Number.isFinite(intervalMs) ? intervalMs : 1000;
     odds,
     lastGoal,
     frame,
+    minute: frame.minutes,
+    goals: GOALS,
+    homeTeam,
+    awayTeam,
   };
 }
