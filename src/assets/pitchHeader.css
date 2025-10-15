@@ -1,0 +1,108 @@
+/* Container */
+.pitch-wrap {
+  margin: 0.5rem 0 1rem;
+}
+
+/* Header */
+.pitch-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 100%;
+  max-width: var(--pitch-max);
+  margin: 0 auto 0.5rem;
+  align-items: start;
+  position: relative;
+  z-index: 3;
+  min-height: 2.25rem;
+  overflow: hidden;
+}
+
+/* Badges */
+.pitch-badge {
+  grid-row: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding-inline: 2rem;
+  width: max-content;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+.pitch-badge.left {
+  grid-column: 1;
+  justify-self: end;
+  align-items: flex-start;
+  text-align: left;
+  animation: pitch-enter-left 920ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.pitch-badge.right {
+  grid-column: 2;
+  justify-self: start;
+  align-items: flex-start;
+  text-align: left;
+  animation: pitch-enter-right 920ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.pitch-badge.center {
+  grid-column: 1 / -1;
+  justify-self: center;
+  align-items: center;
+  text-align: center;
+  opacity: 1;
+}
+
+.pitch-badge.ghost {
+  visibility: hidden;
+}
+
+.pitch-title {
+  color: #ffb25b;
+  font-weight: 800;
+  font-size: 0.95rem;
+  line-height: 1;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
+}
+
+.pitch-team {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.pitch-team .dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: #bcd5df;
+  box-shadow: 0 0 0 0.125rem rgba(188, 213, 223, 0.25);
+}
+
+.pitch-team .team-name {
+  color: #cfe4ea;
+  font-weight: 800;
+  font-size: 0.85rem;
+}
+
+/* Animations */
+@keyframes pitch-enter-left {
+  0%   { transform: translateX(-15%); opacity: 0; filter: blur(2px); }
+  70%  { opacity: 0.98; }
+  100% { transform: translateX(0); opacity: 1; filter: none; }
+}
+
+@keyframes pitch-enter-right {
+  0%   { transform: translateX(15%); opacity: 0; filter: blur(2px); }
+  70%  { opacity: 0.98; }
+  100% { transform: translateX(0); opacity: 1; filter: none; }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .pitch-badge {
+    animation: none !important;
+    opacity: 1;
+    transform: none;
+  }
+}

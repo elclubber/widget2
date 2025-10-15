@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import BallSvg from "./BallSvg.jsx";
-import "./widget.css";
+import BallSvg from "../../assets/BallSvg";
+import "../../assets/widget.css";
 
 const TICKS = [0, 15, 30, 45, 60, 75, 90];
 

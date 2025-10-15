@@ -1,4 +1,4 @@
-import "./widget.css";
+import "../../assets/widget.css";
 
 export default function OddsStrip({ items = [], maxWidth = 720, bleed = 72 }) {
   return (
