@@ -38,42 +38,99 @@ const GOALS = [
   { minute: 28, team: homeTeam, x: 100, y: 60 },
 ];
 
-export default function useFakePossessionFeed(intervalMs = 1000) {
-  const [i, setI] = useState(0);
+const clamp = (n, a, b) => Math.min(Math.max(n, a), b);
+const lerp = (a, b, t) => a + (b - a) * t;
 
-  const period = Number.isFinite(intervalMs) ? intervalMs : 1000;
+/** Find the two FRAMES that bracket 'm' (in minutes) */
+function bracketFrames(m) {
+  if (FRAMES.length === 0) return [null, null, 0];
+
+  // before first or after last
+  if (m <= FRAMES[0].minutes) return [FRAMES[0], FRAMES[0], 0];
+  if (m >= FRAMES[FRAMES.length - 1].minutes)
+    return [FRAMES[FRAMES.length - 1], FRAMES[FRAMES.length - 1], 0];
+
+  for (let i = 0; i < FRAMES.length - 1; i++) {
+    const a = FRAMES[i];
+    const b = FRAMES[i + 1];
+    if (m >= a.minutes && m <= b.minutes) {
+      const span = Math.max(1, b.minutes - a.minutes);
+      const t = clamp((m - a.minutes) / span, 0, 1);
+      return [a, b, t];
+    }
+  }
+  // fallback
+  return [FRAMES[FRAMES.length - 1], FRAMES[FRAMES.length - 1], 0];
+}
+
+/**
+ * Tick-based feed:
+ * - tickMs: real time between ticks (ms)
+ * - minuteStep: virtual minutes added per tick (1 => 1 sec = 1 minute)
+ * - startMinute: initial minute
+ * - loop: when reaching >90, restart at 0 if true
+ */
+export default function useFakePossessionFeed({
+  tickMs = 1000,
+  minuteStep = 1,
+  startMinute = 0,
+  loop = true,
+} = {}) {
+  const [minute, setMinute] = useState(startMinute);
+
+  // Drive the virtual match clock
   useEffect(() => {
     const id = setInterval(() => {
-      setI((n) => (n + 1) % FRAMES.length);
-    }, period);
+      setMinute((m) => {
+        const next = m + minuteStep;
+        if (next > 90) return loop ? 0 : 90;
+        return next;
+      });
+    }, tickMs);
     return () => clearInterval(id);
-  }, [period]);
+  }, [tickMs, minuteStep, loop]);
 
-  const frame = FRAMES[i];
+  // Derive a frame for the current minute (with interpolation)
+  const frame = useMemo(() => {
+    const [a, b, t] = bracketFrames(minute);
+    // If only one frame applies, use it directly
+    if (!a || !b) return FRAMES[0];
 
-  const halfCount = frame.minutes <= 45 ? 1 : 2;
+    const left = Math.round(lerp(a.left, b.left, t));
+    const right = Math.round(lerp(a.right, b.right, t));
+    // pick a team around the mid-point (optional; tweak as desired)
+    const ballPossTeam = t < 0.5 ? a.ballPossTeam : b.ballPossTeam;
+
+    return {
+      left,
+      right,
+      minutes: minute,
+      ballPossTeam,
+    };
+  }, [minute]);
+
+  // Teams per half based on virtual minute
+  const halfCount = minute <= 45 ? 1 : 2;
   const leftSideTeam = halfCount === 1 ? homeTeam : awayTeam;
   const rightSideTeam = halfCount === 1 ? awayTeam : homeTeam;
 
   const leftPossTeamPct = frame.left;
   const rightPossTeamPct = frame.right;
-
   const ballPossTeam = frame.ballPossTeam;
+
   const headerSide =
     leftPossTeamPct === rightPossTeamPct
       ? "center"
       : leftPossTeamPct > rightPossTeamPct
       ? "left"
       : "right";
+
   const odds = useMemo(() => STATIC_ODDS, []);
 
   const lastGoal = useMemo(() => {
-    const m = frame.minutes;
-    const past = [...GOALS].filter((g) => g.minute <= m).pop();
-    return past
-      ? { label: "GOAL", team: past.team, minute: past.minute }
-      : null;
-  }, [frame.minutes]);
+    const past = [...GOALS].filter((g) => g.minute <= minute).pop();
+    return past ? { label: "GOAL", team: past.team, minute: past.minute } : null;
+  }, [minute]);
 
   return {
     leftSideTeam,
@@ -85,7 +142,7 @@ export default function useFakePossessionFeed(intervalMs = 1000) {
     odds,
     lastGoal,
     frame,
-    minute: frame.minutes,
+    minute,          // ⚽ virtual minute (advances 1/min per second by default)
     goals: GOALS,
     homeTeam,
     awayTeam,

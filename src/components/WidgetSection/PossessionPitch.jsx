@@ -4,6 +4,7 @@ import PitchSvg from "./PitchSvg";
 import PossessionHeader from "./PossessionHeader";
 import PitchOverlayAxes from "./PitchOverlayAxes";
 import useFakePossessionFeed from "./hooks/useFakePossessionFeed";
+import { defaultPitchOverlayConfig } from "./pitchOverlay.config";
 import "./widget.css";
 
 export default function PossessionPitch({
@@ -23,28 +24,18 @@ export default function PossessionPitch({
     sideInPossession === "left" ? leftTeam :
     sideInPossession === "right" ? rightTeam : "";
 
-  const { goals } = useFakePossessionFeed(1000);
-  const goalPoints = useMemo(
-    () => goals.map(({ x, y }) => ({ x, y })),
-    [goals]
-  );
+  const { goals, minute } = useFakePossessionFeed(1000);
 
   return (
     <div className="poss-wrap" style={{ "--pitch-max": `${maxWidth}px` }}>
       <PossessionHeader side={sideInPossession} team={teamInPossession} tick={possTick} />
-
       <div className="pitch-area">
         <PitchSvg className="pitch-svg" />
         <PitchOverlayAxes
-          showGrid
-          showAxes
-          points={goalPoints}
-          gridStepPct={10}
-          arcHump={1}
-          ballSize={18}
-          className={""}
+          goals={goals}
+          minute={minute}
+          config={defaultPitchOverlayConfig}
         />
-
         <div className="percent left"><span className="value">{leftPct}%</span></div>
         <div className="percent right"><span className="value">{rightPct}%</span></div>
       </div>
