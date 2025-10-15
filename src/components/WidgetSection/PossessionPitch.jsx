@@ -3,6 +3,7 @@ import React, { useMemo } from "react";
 import PitchSvg from "./PitchSvg";
 import PossessionHeader from "./PossessionHeader";
 import PitchOverlayAxes from "./PitchOverlayAxes";
+import useFakePossessionFeed from "./hooks/useFakePossessionFeed";
 import "./widget.css";
 
 export default function PossessionPitch({
@@ -10,7 +11,7 @@ export default function PossessionPitch({
   rightTeam,
   leftPct,
   rightPct,
-  maxWidth = 720,
+  maxWidth,
   possTick,
 }) {
   const sideInPossession = useMemo(() => {
@@ -22,12 +23,11 @@ export default function PossessionPitch({
     sideInPossession === "left" ? leftTeam :
     sideInPossession === "right" ? rightTeam : "";
 
-  // Example three-point path (x%, y%), y=100 is near (bottom), y=0 is far (top)
-  const demoPoints = [
-    { x: 35, y: 55 },
-    { x: 72, y: 42 },
-    { x: 88, y: 30 },
-  ];
+  const { goals } = useFakePossessionFeed(1000);
+  const goalPoints = useMemo(
+    () => goals.map(({ x, y }) => ({ x, y })),
+    [goals]
+  );
 
   return (
     <div className="poss-wrap" style={{ "--pitch-max": `${maxWidth}px` }}>
@@ -35,15 +35,14 @@ export default function PossessionPitch({
 
       <div className="pitch-area">
         <PitchSvg className="pitch-svg" />
-
-        {/* NEW: overlay sits on top and fills the same box */}
         <PitchOverlayAxes
           showGrid
           showAxes
-          points={demoPoints}     // replace with actual coordinates
+          points={goalPoints}
           gridStepPct={10}
-          arcHump={0.6}
+          arcHump={1}
           ballSize={18}
+          className={""}
         />
 
         <div className="percent left"><span className="value">{leftPct}%</span></div>

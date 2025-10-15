@@ -20,11 +20,12 @@ export default function WidgetSection() {
     goals,
   } = useFakePossessionFeed(1400);
 
+  const pitchSize = 720;
   return (
     <div className="widget-wrap">
       <div className="widget-card">
-        <OddsStrip items={odds} maxWidth={720} />
-        <GoalStrip lastGoal={lastGoal} maxWidth={720} />
+        <OddsStrip items={odds} maxWidth={pitchSize} />
+        <GoalStrip lastGoal={lastGoal} maxWidth={pitchSize} />
         <PossessionPitch
           leftTeam={leftSideTeam}
           rightTeam={rightSideTeam}
@@ -32,16 +33,10 @@ export default function WidgetSection() {
           rightPct={rightPossTeamPct}
           ballPossTeam={ballPossTeam}
           headerSide={headerSide}
-          maxWidth={720}
+          maxWidth={pitchSize}
           possTick={frame}
-          pathPoints={[
-            { x: 40, y: 62 },
-            { x: 70, y: 40 },
-            { x: 92, y: 34 },
-          ]}
-          showAxes={true}
         />
-        <MatchTimeline minute={minute} goals={goals} maxWidth={720} />
+        <MatchTimeline minute={minute} goals={goals} maxWidth={pitchSize} />
       </div>
     </div>
   );

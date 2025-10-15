@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import FootballIcon from "./FootballIcon.jsx";
+import BallSvg from "./BallSvg.jsx";
 
 /**
  * Pitch quad (same trapezoid as your <PitchSvg viewBox="0 0 278 62">):
@@ -203,7 +204,7 @@ export default function BallPathOverlay({
           }}
           aria-hidden="true"
         >
-          <FootballIcon size={ballSize} />
+          <BallSvg />
         </div>
       ))}
     </div>

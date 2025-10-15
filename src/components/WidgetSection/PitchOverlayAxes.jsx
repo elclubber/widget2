@@ -1,5 +1,5 @@
 // PitchOverlayAxes.jsx
-import FootballIcon from "./FootballIcon";
+import BallSvg from "./BallSvg";
 
 /**
  * We draw in the same viewBox as PitchSvg: 0 0 278 62
@@ -22,45 +22,41 @@ function quadLerp(u, v) {
 }
 
 /**
- * Draw a quadratic dotted arc between p0 and p1 in screen coords.
- * "hump" controls how high the arc bows towards the far side (smaller y).
+ * Rounded (semi-circle-ish) arc between p0 and p1 using a cubic Bézier.
+ * bulge: 0..1 – how round/high the arc is (try 0.45–0.70).
  */
-function arcPath(p0, p1, curvature = 0.35) {
-  // midpoint
-  const mx = (p0.x + p1.x) / 2;
-  const my = (p0.y + p1.y) / 2;
-
-  // chord vector + length
+function roundedArcPath(p0, p1, bulge = 0.55) {
   const dx = p1.x - p0.x;
   const dy = p1.y - p0.y;
   const len = Math.hypot(dx, dy) || 1;
 
-  // unit normal (perpendicular)
-  let nx = -dy / len;
-  let ny =  dx / len;
+  // unit direction along chord and its perpendicular
+  const ux = dx / len;
+  const uy = dy / len;
+  let nx = -uy;  // perpendicular
+  let ny =  ux;
 
-  // push control point “up” (toward smaller y on this pitch)
+  // bow “upfield” (toward smaller y on this pitch)
   if (ny > 0) { nx = -nx; ny = -ny; }
 
-  const k = curvature;              // 0..1 (e.g., 0.25–0.5)
-  const cx = mx + nx * len * k;
-  const cy = my + ny * len * k;
+  // control points at 1/3 and 2/3 along the chord, offset by the same height
+  const h = len * bulge;             // arc height; increase for more “semi-round”
+  const c1x = p0.x + ux * (len / 3) + nx * h;
+  const c1y = p0.y + uy * (len / 3) + ny * h;
+  const c2x = p0.x + ux * (2 * len / 3) + nx * h;
+  const c2y = p0.y + uy * (2 * len / 3) + ny * h;
 
-  return `M ${p0.x} ${p0.y} Q ${cx} ${cy} ${p1.x} ${p1.y}`;
+  return `M ${p0.x} ${p0.y} C ${c1x} ${c1y} ${c2x} ${c2y} ${p1.x} ${p1.y}`;
 }
 
-
 export default function PitchOverlayAxes({
-  /** [{x:0..100, y:0..100}, ...] in percent, lower side = y:100, far side = y:0 */
-  points = [],
-  showGrid = true,
-  showAxes = true,
-  gridStepPct = 10, // grid at every 10%
-  arcHump = 9, // curvature of dotted path
-  ballSize = 18,
-  className = "",
+  points,
+  showGrid,
+  showAxes,
+  gridStepPct,
+  ballSize,
+  className,
 }) {
-  // build grid lines in the trapezoid
   const gridLines = [];
   if (showGrid) {
     for (let u = 0; u <= 100; u += gridStepPct) {
@@ -81,50 +77,42 @@ export default function PitchOverlayAxes({
     }
   }
 
-  // axes (0–100%). X goes left→right along the near touchline; Y is the left slanted edge
   const x0 = quadLerp(0, 1);
   const x1 = quadLerp(1, 1);
   const y0 = quadLerp(0, 1);
   const y1 = quadLerp(0, 0);
 
-  // convert % coords to screen coords
   const toScreen = ({ x, y }) => quadLerp(x / 100, 1 - y / 100);
 
-  // balls + arcs
-  const arcs = [];
-  const balls = [];
-  points.forEach((pt, i) => {
-    const p = toScreen(pt);
-    balls.push(
-      <g
-        key={`ball-${i}`}
-        transform={`translate(${p.x - ballSize / 2}, ${p.y - ballSize / 2})`}
-      >
-        {/* Make the icon ignore pointer events so it behaves like a pure overlay */}
-        <foreignObject width={ballSize} height={ballSize} pointerEvents="none">
-          <div style={{ width: ballSize, height: ballSize }}>
-            <FootballIcon size={ballSize} />
-          </div>
-        </foreignObject>
+const arcs = [];
+const balls = [];
+points.forEach((pt, i) => {
+  const p = toScreen(pt);
+  balls.push(
+    <g
+      key={`ball-${i}`}
+      transform={`translate(${p.x - ballSize / 5}, ${p.y - ballSize / 20})`}
+    >
+      <BallSvg size={ballSize / 2.6} />
       </g>
+  );
+  if (i > 0) {
+    const p0 = toScreen(points[i - 1]);
+    arcs.push(
+      <path
+        key={`arc-${i - 1}-${i}`}
+        d={roundedArcPath(p0, p, 0.55)}
+        strokeDasharray="6 8"
+        fill="none"
+        className="path-arc"
+      />
     );
-    if (i > 0) {
-      const p0 = toScreen(points[i - 1]);
-      arcs.push(
-        <path
-          key={`arc-${i - 1}-${i}`}
-          d={arcPath(p0, p, arcHump)}
-          strokeDasharray="4 4"
-          fill="none"
-          className="path-arc"
-        />
-      );
-    }
-  });
+  }
+});
 
   return (
     <div className={`pitch-overlay ${className}`}>
-      <svg viewBox="0 0 278 62" preserveAspectRatio="none" aria-hidden="true">
+      <svg viewBox="0 0 278 62" preserveAspectRatio="none" aria-hidden="true" className="overlay-surface">
         {/* GRID */}
         {showGrid && (
           <g

@@ -33,9 +33,9 @@ const STATIC_ODDS = [
 
 // Mocked goal events – adjust freely
 const GOALS = [
-  { minute: 6, team: awayTeam },
-  { minute: 24, team: homeTeam },
-  { minute: 28, team: homeTeam },
+  { minute: 6, team: awayTeam, x: 35, y: 85 },
+  { minute: 24, team: homeTeam, x: 72, y: 92 },
+  { minute: 28, team: homeTeam, x: 100, y: 60 },
 ];
 
 export default function useFakePossessionFeed(intervalMs = 1000) {

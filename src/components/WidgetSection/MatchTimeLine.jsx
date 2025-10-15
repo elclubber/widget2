@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import FootballIcon from "./FootballIcon.jsx";
+import BallSvg from "./BallSvg.jsx";
 import "./widget.css";
 
 const TICKS = [0, 15, 30, 45, 60, 75, 90];
@@ -49,9 +49,6 @@ export default function MatchTimeline({
     );
   }, [rawPins, minute]);
 
-  // ⛔️ Removed: auto-close on minute change
-  // useEffect(() => setOpenId(null), [minute]);
-
   // Click outside to close
   useEffect(() => {
     const onDocDown = (e) => {
@@ -60,13 +57,6 @@ export default function MatchTimeline({
     document.addEventListener("pointerdown", onDocDown);
     return () => document.removeEventListener("pointerdown", onDocDown);
   }, []);
-
-  // ⛔️ Removed: close on Escape
-  // useEffect(() => {
-  //   const onKey = (e) => e.key === "Escape" && setOpenId(null);
-  //   document.addEventListener("keydown", onKey);
-  //   return () => document.removeEventListener("keydown", onKey);
-  // }, []);
 
   return (
     <div
@@ -127,7 +117,7 @@ export default function MatchTimeline({
                   onClick={() => setOpenId(isOpen ? null : g.id)}
                   title={`Goal: ${g.team} ${g.minute}’`}
                 >
-                  <FootballIcon size={20} />
+                  <BallSvg size={18} color="#111" />
                 </button>
 
                 <div
